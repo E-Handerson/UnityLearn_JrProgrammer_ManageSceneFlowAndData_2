@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Multiplayer.PlayMode;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -10,6 +12,9 @@ public class MainManager : MonoBehaviour
     public int LineCount = 6;
     public Rigidbody Ball;
 
+    // Added by coder
+    [SerializeField] private Text _bestScore;
+
     public Text ScoreText;
     public GameObject GameOverText;
     
@@ -17,6 +22,7 @@ public class MainManager : MonoBehaviour
     private int m_Points;
     
     private bool m_GameOver = false;
+
 
     
     // Start is called before the first frame update
@@ -36,6 +42,8 @@ public class MainManager : MonoBehaviour
                 brick.onDestroyed.AddListener(AddPoint);
             }
         }
+
+        UpdateBestScore();
     }
 
     private void Update()
@@ -59,6 +67,13 @@ public class MainManager : MonoBehaviour
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
+            
+        }
+        
+        // Watch for the backspace to return to the main menu
+        if(Input.GetKeyDown(KeyCode.Backspace))
+        {
+            SceneManager.LoadScene("MainMenu");
         }
     }
 
@@ -68,8 +83,41 @@ public class MainManager : MonoBehaviour
         ScoreText.text = $"Score : {m_Points}";
     }
 
-    public void GameOver()
+    /// <summary>
+    /// Update the best score line
+    /// </summary>
+    private void UpdateBestScore()
     {
+        if (GameManager.Instance.HighScorePlayerList != null)
+        {
+            _bestScore.text = $"Best Score : {GameManager.Instance.HighScorePlayerList.Players[0].PlayerName} : {GameManager.Instance.HighScorePlayerList.Players[0].Score}";
+        }
+    }
+
+    /// <summary>
+    /// When the game is over, update the score if the player has become the new top score
+    /// </summary>
+    public void GameOver()
+    { 
+        // Update the current players score
+        GameManager.Instance.CurrentPlayer.Score = m_Points;
+
+        // Check if the score is higher than the current best score
+        if(GameManager.Instance.HighScorePlayerList == null)
+        {
+            SaveData.SaveBestScore(GameManager.Instance.CurrentPlayer.PlayerName, m_Points);
+        }
+        else if(m_Points > GameManager.Instance.HighScorePlayerList.Players[0].Score)
+        {
+            // Save the new score if it is higher
+            SaveData.SaveBestScore(GameManager.Instance.CurrentPlayer.PlayerName, m_Points);
+
+
+
+        }
+            // Update the displayed top score
+            UpdateBestScore();
+
         m_GameOver = true;
         GameOverText.SetActive(true);
     }
