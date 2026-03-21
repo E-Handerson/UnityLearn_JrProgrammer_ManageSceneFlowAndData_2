@@ -12,7 +12,7 @@ PlayerSettings:
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
-  companyName: DefaultCompany
+  companyName: TheGeekyBunch
   productName: SimpleBreakout
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
@@ -965,11 +965,11 @@ PlayerSettings:
   captureStartupLogs: {}
   activeInputHandler: 0
   windowsGamepadBackendHint: 0
-  cloudProjectId: 
+  cloudProjectId: 9d70521b-e654-451c-b773-e97403f4d615
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: 
-  organizationId: 
+  projectName: JrProgrammer_Mission7b
+  organizationId: geekygirl_cgy
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}
