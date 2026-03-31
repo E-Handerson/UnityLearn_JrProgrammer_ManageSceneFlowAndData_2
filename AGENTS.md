@@ -1,8 +1,8 @@
 <!-- UNITY CODE ASSIST INSTRUCTIONS START -->
-- Project name: UnityLearn_JrProgrammer_ManageSceneFlowAndData_2
-- Unity version: Unity 6000.3.10f1
+- Project name: JrProgrammer_Mission7b
+- Unity version: Unity 6000.4.0f1
 - Active game object:
-  - Name: GameManager
+  - Name: Canvas
   - Tag: Untagged
-  - Layer: Default
+  - Layer: UI
 <!-- UNITY CODE ASSIST INSTRUCTIONS END -->

@@ -1,6 +1,5 @@
-using System.Web;
+using System.Collections;
 using TMPro;
-using Unity.Multiplayer.PlayMode;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -14,31 +13,43 @@ public class MainMenu : MonoBehaviour
     [SerializeField] private Button _exitButton;
     [SerializeField] private Button _highScores;
     [SerializeField] private TMP_InputField _userName;
-
+    [SerializeField] private TextMeshProUGUI _bestScoreText;
 
     private void Start()
     {
-        
-       /* if (GameManager.Instance.CurrentPlayer.PlayerName != string.Empty)
+        // Check if there is a registered player and display the name, otherwise log that there is no registered player
+        if (GameManager.Instance.CurrentPlayer.PlayerName == string.Empty)
         {
-            Debug.Log($"The player name is {GameManager.Instance.CurrentPlayer.PlayerName}");
+            Debug.Log("No registered player found");           
+        }
+        else
+        {
+            // If there is a registered player, display the name in the input field
             _userName.text = GameManager.Instance.CurrentPlayer.PlayerName;
         }
-        else
-        {
-            Debug.Log("no player found");
-        }*/
 
-        // If there is a high schore list, load the highest score player name to the field
-        if(GameManager.Instance.HighScorePlayerList != null)
+        // Display the best score on load
+        LoadBestPlayer();
+    }
+
+    /// <summary>
+    /// Load the best player score after each new high score is added to the list
+    /// </summary>
+    public void LoadBestPlayer()
+    {
+        // If there are no high scores in the list, display "Best Score: None", otherwise display the name and score of the best player
+        if (GameManager.Instance.HighScorePlayerList == null)
         {
-            _userName.text = GameManager.Instance.HighScorePlayerList.Players[0].PlayerName;
+            _bestScoreText.text = "Best Score: None";
+            
         }
         else
         {
-            Debug.Log("No high scores found.");
+            _bestScoreText.text = $"Best Score: {GameManager.Instance.HighScorePlayerList[0].PlayerName} - {GameManager.Instance.HighScorePlayerList[0].Score}";
         }
+ 
     }
+
     /// <summary>
     /// Starts the game
     /// </summary>
@@ -63,8 +74,13 @@ public class MainMenu : MonoBehaviour
     /// <param name="sceneName">The scene name to load</param>
     private void ChangeScene(string sceneName)
     {
-        GameManager.Instance.CreatePlayer(_userName.text);
-
+        // If the player name is empty, log a warning and use a default name, then create the player and load the requested scene
+        if (_userName.text == string.Empty)
+        {
+            Debug.LogWarning("Player name is empty, using default name");
+            _userName.text = "Player";
+        }
+        GameManager.Instance.CreatePlayer(_userName.text, 0);
         SceneManager.LoadScene(sceneName);
     }
 
@@ -74,6 +90,7 @@ public class MainMenu : MonoBehaviour
     /// <remarks>Currently configured to exit from the editor, not a published game</remarks>
     public void ExitGame()
     {
+        SaveData.SaveHighScoreList();
         EditorApplication.ExitPlaymode();
     }
 }

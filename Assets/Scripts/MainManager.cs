@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.Multiplayer.PlayMode;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -24,7 +20,6 @@ public class MainManager : MonoBehaviour
     private bool m_GameOver = false;
 
 
-    
     // Start is called before the first frame update
     void Start()
     {
@@ -88,9 +83,10 @@ public class MainManager : MonoBehaviour
     /// </summary>
     private void UpdateBestScore()
     {
+       
         if (GameManager.Instance.HighScorePlayerList != null)
         {
-            _bestScore.text = $"Best Score : {GameManager.Instance.HighScorePlayerList.Players[0].PlayerName} : {GameManager.Instance.HighScorePlayerList.Players[0].Score}";
+            _bestScore.text = $"Best Score : {GameManager.Instance.HighScorePlayerList[0].PlayerName} : {GameManager.Instance.HighScorePlayerList[0].Score}";
         }
     }
 
@@ -102,21 +98,11 @@ public class MainManager : MonoBehaviour
         // Update the current players score
         GameManager.Instance.CurrentPlayer.Score = m_Points;
 
-        // Check if the score is higher than the current best score
-        if(GameManager.Instance.HighScorePlayerList == null)
-        {
-            SaveData.SaveBestScore(GameManager.Instance.CurrentPlayer.PlayerName, m_Points);
-        }
-        else if(m_Points > GameManager.Instance.HighScorePlayerList.Players[0].Score)
-        {
-            // Save the new score if it is higher
-            SaveData.SaveBestScore(GameManager.Instance.CurrentPlayer.PlayerName, m_Points);
+        // Update the high score list
+        GameManager.Instance.AddHighScore();
 
-
-
-        }
-            // Update the displayed top score
-            UpdateBestScore();
+        // Update the displayed top score
+        UpdateBestScore();
 
         m_GameOver = true;
         GameOverText.SetActive(true);

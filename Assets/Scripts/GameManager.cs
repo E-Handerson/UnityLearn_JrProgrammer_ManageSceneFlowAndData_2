@@ -1,8 +1,8 @@
-using UnityEngine.UI;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using System.Collections.Generic;
-using System.Linq;
+using UnityEngine.SocialPlatforms.Impl;
+
 
 
 public class GameManager : MonoBehaviour
@@ -10,13 +10,11 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
 
     [Header("Player Information")]
-    [SerializeField] private Button _loadPlayer;
     [SerializeField] private TextMeshProUGUI _scoreText;
 
-
+    // Player information and high score list
     public Player CurrentPlayer;
-    public PlayerList HighScorePlayerList;
-
+    public List<Player> HighScorePlayerList = new List<Player>();
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Awake()
@@ -32,9 +30,12 @@ public class GameManager : MonoBehaviour
         // Create a new instance and set it to not be destroyed
         Instance = this;
         DontDestroyOnLoad(gameObject);
+    }
 
-       
-        LoadHighScores();
+    private void Start()
+    {
+        // Load the high score list from the save data and display it
+        SaveData.LoadHighScoreList();
     }
 
     /// <summary>
@@ -42,30 +43,39 @@ public class GameManager : MonoBehaviour
     /// </summary>
     /// <param name="name">Name passed from the user input field in the main menu</param>
     /// <remarks>Set up the player name and score, updates the name each round and resets the score</remarks>
-    public void CreatePlayer(string name)
+    public void CreatePlayer(string name, int score)
     {
-        CurrentPlayer.PlayerName = name;
-        CurrentPlayer.Score = 0;
-        Debug.Log($"Current Player: {CurrentPlayer.PlayerName} Current Score: {CurrentPlayer.Score}");
+        if (name != string.Empty)
+        {
+            CurrentPlayer.PlayerName = name;
+            CurrentPlayer.Score = score;
+            Debug.Log($"Current Player: {CurrentPlayer.PlayerName} Current Score: {CurrentPlayer.Score}");
+        }
     }
-    
+
     /// <summary>
-    /// Look for a file holding the top score and load it if found, or return a new player
+    /// Add new high score to the list if the current player's score is higher than the lowest score in the list, then save the updated list
     /// </summary>
-    public void LoadHighScores()
+    public void AddHighScore()
     {
-        // Load the high score list
-        HighScorePlayerList = SaveData.ReadHighScoreList();
-        if(HighScorePlayerList == null )
-        {
-            Debug.Log("no players found");
-        }
-        else
+        // Create a new player object with the current player's name and score
+        Player newHighScorePlayer = new Player();
+        newHighScorePlayer.PlayerName = CurrentPlayer.PlayerName;
+        newHighScorePlayer.Score = CurrentPlayer.Score;
 
+        // Check if the new score is higher than the lowest score in the list, and if so, add it to the list and sort it
+        if (newHighScorePlayer.Score > HighScorePlayerList[HighScorePlayerList.Count - 1].Score)
         {
-            // Set the Best Score with information provided
-            _scoreText.text = $"Best Score : {HighScorePlayerList.Players[0].PlayerName} : {HighScorePlayerList.Players[0].Score}";
+            HighScorePlayerList.Add(newHighScorePlayer);
+            HighScorePlayerList.Sort((x, y) => y.Score.CompareTo(x.Score));
+            // If the list has more than 5 scores, remove the lowest score
+            if (HighScorePlayerList.Count > 5)
+            {
+                HighScorePlayerList.RemoveAt(HighScorePlayerList.Count - 1);
+            }
         }
+        // Save the updated high score list
+        SaveData.SaveHighScoreList();
     }
-
 }
+

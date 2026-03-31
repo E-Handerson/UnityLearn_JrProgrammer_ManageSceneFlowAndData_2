@@ -240,7 +240,7 @@ MonoBehaviour:
   _exitButton: {fileID: 850237163}
   _highScores: {fileID: 584756265}
   _userName: {fileID: 1381180605}
-  _bestScoreText: {fileID: 437675701}
+  _bestScoreText: {fileID: 0}
 --- !u!1 &251431665
 GameObject:
   m_ObjectHideFlags: 0
