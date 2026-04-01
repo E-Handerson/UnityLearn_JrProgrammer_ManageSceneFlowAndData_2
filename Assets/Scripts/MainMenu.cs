@@ -91,7 +91,7 @@ public class MainMenu : MonoBehaviour
     public void ExitGame()
     {
         SaveData.SaveHighScoreList();
-        EditorApplication.ExitPlaymode();
+        Application.Quit();
     }
 }
 
